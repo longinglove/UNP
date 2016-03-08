@@ -5,7 +5,7 @@
     > Created Time: Fri 04 Mar 2016 10:26:44 PM CST
  ************************************************************************/
 
-#include"apue.h"
+#include"../apue.h"
 #include<dirent.h>
 
 int main(int argc, char* argv[])
