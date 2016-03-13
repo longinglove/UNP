@@ -40,6 +40,7 @@ int main()
 		ERR_EXIT("listen error");
 	if ((conn = accept(listenfd, (struct sockaddr*)&peeraddr, &peerlen)) < 0)
 		ERR_EXIT("accept error");
+	printf("id = %s, port = %d\n", inet_ntoa(peeraddr.sin_addr), ntohs(peeraddr.sin_port));
 	while (1)
 	{
 		memset(recvbuf, 0, sizeof(recvbuf));
@@ -47,5 +48,7 @@ int main()
 		fputs(recvbuf, stdout);
 		write(conn, recvbuf, ret);
 	}
+	close(conn);
+	close(listenfd);
 	return 0;
 }

@@ -8,18 +8,18 @@
 #include"../apue.h"
 #include<dirent.h>
 
+#define ERROR(m)	\
+	do {perror(m); exit(EXIT_FAILURE);} while (0)
+
 int main(int argc, char* argv[])
 {
 	DIR		*dp;
 	struct dirent	*dirp;
 
 	if (argc != 2)
-	{
-		printf("usage: ls directory_name\n");
-		exit(0);
-	}
+		ERROR("input error");
 	if ((dp = opendir(argv[1])) == NULL)
-		printf("cant open %s", argv[1]);
+		ERROR("opendir error");
 	while ((dirp = readdir(dp)) != NULL)
 		printf("%s\n", dirp->d_name);
 	closedir(dp);
