@@ -5,6 +5,7 @@
 	> Created Time: 2016年03月13日 星期日 16时04分55秒
  ************************************************************************/
 
+#include<signal.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -18,6 +19,8 @@
 #define BUFSIZE 1024
 #define ERROR(m)	\
 	do {perror(m); exit(EXIT_FAILURE);} while (0)
+
+void handler(int sig);
 
 int main()
 {
@@ -50,15 +53,27 @@ int main()
 			else
 				printf("%s", recvbuf);
 		}
+		close(sock);
+		kill(getppid(), SIGUSR1);
 	}
 	else
 	{
+		signal(SIGUSR1, handler);
 		while (fgets(sendbuf, BUFSIZE, stdin) != NULL)
 		{
 			write(sock, sendbuf, strlen(sendbuf));
 			printf("%s", recvbuf);
 			memset(sendbuf, 0, BUFSIZE);
 		}
+		printf("parent close\n");
+		exit(EXIT_SUCCESS);
 	}
 	return 0;
+}
+
+
+void handler(int sig)
+{
+	printf("recv a sig = %d\n", sig);
+	exit(EXIT_SUCCESS);
 }

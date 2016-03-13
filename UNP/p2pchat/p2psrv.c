@@ -14,10 +14,13 @@
 #include<arpa/inet.h>
 #include<sys/socket.h>
 #include<netinet/in.h>
+#include<signal.h>
 
 #define BUFSIZE 1024
 #define ERROR(m)	\
 	do {perror(m); exit(EXIT_FAILURE);} while (0)
+
+void handler(int sig);
 
 int main()
 {
@@ -45,12 +48,14 @@ int main()
 		ERROR("fork error");
 	if (pid == 0)
 	{
+		signal(SIGUSR1, handler);
 		char sendbuf[BUFSIZE] = {0};
 		while (fgets(sendbuf, BUFSIZE, stdin) != NULL)
 		{
 			write(conn, sendbuf, strlen(sendbuf));
 			memset(sendbuf, 0, BUFSIZE);
 		}
+		printf("child close\n");
 		exit(EXIT_SUCCESS);
 	}
 	else
@@ -67,7 +72,16 @@ int main()
 			}
 			printf("%s", rcvbuf);
 		}
+		printf("parent close\n");
+		kill(pid, SIGUSR1);
 		exit(EXIT_SUCCESS);
 	}
 	return 0;
+}
+
+
+void handler(int sig)
+{
+	printf("recv a sig = %d\n", sig);
+	exit(EXIT_SUCCESS);
 }
